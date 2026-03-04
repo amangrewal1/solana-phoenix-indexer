@@ -1,0 +1,35 @@
+services:
+  decoder:
+    build: ./rust-decoder
+    ports:
+      - "9000:9000"
+    environment:
+      RUST_LOG: info
+      PORT: "9000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  indexer:
+    build: ./ts-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      decoder:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      DECODER_URL: "http://decoder:9000"
+      SOLANA_WS_URL: "${SOLANA_WS_URL:-wss://api.mainnet-beta.solana.com}"
+      SOLANA_HTTP_URL: "${SOLANA_HTTP_URL:-https://api.mainnet-beta.solana.com}"
+      MARKETS: "${MARKETS:-4DoNfFBfF7UokCC2FQzriy7yHK6DY6NVdYpuekQ5pRgg}"
+      LOG_LEVEL: "info"
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
