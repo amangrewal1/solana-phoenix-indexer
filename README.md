@@ -1,5 +1,7 @@
 # Solana On-Chain Order Book Indexer
 
+![build](https://github.com/amangrewal1/solana-phoenix-indexer/actions/workflows/build.yml/badge.svg) ![license](https://img.shields.io/badge/license-MIT-blue)
+
 Indexes Phoenix order books on Solana. TypeScript subscriber + in-memory book + REST/WS API, Rust decoder microservice for on-chain account data.
 
 ## Architecture
